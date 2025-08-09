@@ -40,3 +40,61 @@ npm run build
 ```
 yarn build
 ```
+Архитектура (MVP)
+
+1. Слои
+
+Слой	Компоненты	Ответственность
+Model	ProductModel, OrderModel	Работа с данными и бизнес-логика
+View	Catalog, Cart, Modal	Отображение и пользовательские события
+Presenter	App (в index.ts)	Координация Model и View
+
+2. Типы данных
+
+Product (Товар):
+
+```
+typescript
+
+interface IProduct {
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  image: string;
+}
+```
+
+
+Order (Заказ):
+```
+typescript
+
+interface Order {
+  payment: 'online' | 'cash';
+  address: string;
+  email: string;
+  phone: string;
+  items: string[]; // IDs товаров
+}
+```
+3. Ключевые компоненты
+
+EventEmitter (src/utils/eventEmitter.ts)
+typescript
+class EventEmitter {
+  on(event: string, callback: Function): void;
+  emit(event: string, data?: any): void;
+}
+ProductModel (src/models/product.ts)
+typescript
+class ProductModel {
+  getProducts(): Promise<Product[]>;
+  getProductById(id: string): Product | undefined;
+}
+Catalog (src/components/catalog.ts)
+typescript
+class Catalog {
+  render(products: Product[]): void;
+  onCardClick: (productId: string) => void;
+}
