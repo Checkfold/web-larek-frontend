@@ -17,7 +17,7 @@ export class Card extends Component<ICard> implements ICard {
 
 		this._title = container.querySelector('.card__title');
 		this._category = container.querySelector('.card__category');
-		this._image = container.querySelector('card__image');
+		this._image = container.querySelector('.card__image');
 		this._button = container.querySelector('.card__button');
 		this._description = container.querySelector('.card__text');
 		this._price = container.querySelector('.card__price');

@@ -4,8 +4,8 @@ import { ensureElement, formatNumber } from "../../utils/utils";
 import { Component } from "../base/Components";
 
 export class Success extends Component<TSuccess> {
-	protected _close: HTMLElement;
 	protected _total: HTMLElement;
+	protected _close: HTMLElement;
 
 	constructor(container: HTMLElement, actions?: ISuccessActions) {
 		super(container);
