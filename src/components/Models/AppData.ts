@@ -76,7 +76,7 @@ export class AppState extends Model<IAppState> implements IAppState {
 	updateContactDetails(field: keyof TContactsForm, value: string): void {
 		this.order[field] = value;
 
-		this.validateOrderForm();
+		this.validateContactForm();
 	}
 
 	validateOrderForm(): void {

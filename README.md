@@ -310,18 +310,16 @@ interface IOrder {
 Конструктор: constructor(container: HTMLFormElement, events: IEvents)
 
 Поля:
-1. _paymentButtons: Map<string, HTMLButtonElement> - коллекция кнопок выбора способа оплаты
+1. _buttonCard: HTMLButtonElement - кнопка выбора оплаты картой (онлайн)оплаты
+2. _buttonCash: HTMLButtonElement - кнопка выбора оплаты наличными (при получении)
 
 Сеттеры:
 1. address: string - устанавливает значение поля адреса доставки
-2. payment: string, address: string
+2. payment: string - устанавливает выбранный способ оплаты и обновляет визуальное состояние кнопок
 
 Методы: 
-1. _initializePaymentButtons(): void - инициализация кнопок оплаты
-2. _setupPaymentHandlers(): void - установка обработчиков для кнопок
-3. _selectPaymentMethod(method: string): void - выбор способа оплаты
-4. _updateButtonStates(selectedMethod: string): void - обновление состояния кнопок
-5. _resetPaymentButtons(): void - сброс состояния кнопок
+1. toggleCard(): void - активирует оплату картой и деактивирует оплату наличными
+2. toggleCash(): void - активирует оплату наличными и деактивирует оплату картой
 
 # Класс Contacts
 Назначение: Форма контактных данных.
