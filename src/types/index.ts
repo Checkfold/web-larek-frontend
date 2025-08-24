@@ -11,7 +11,7 @@ export interface IOrder {
 	payment: string;
 	email: string;
 	phone: string;
-	adress: string;
+	address: string;
 	items: string[];
 	total: number;
 }
@@ -23,7 +23,7 @@ export interface IOrderAnswer {
 
 export type TForms = TOrderForm & TContactsForm; 
 export type TContactsForm = Pick<IOrder, 'email' | 'phone'>; 
-export type TOrderForm = Pick<IOrder, 'payment' | 'adress'>; 
+export type TOrderForm = Pick<IOrder, 'payment' | 'address'>; 
 
 export type TSuccess = Pick<IBasketView, 'total'>;
 

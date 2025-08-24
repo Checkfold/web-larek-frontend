@@ -10,7 +10,7 @@ export class AppState extends Model<IAppState> implements IAppState {
 		payment: '',
 		email: '',
 		phone: '',
-		adress: '',
+		address: '',
 		items: [],
 		total: 0,
 	};
@@ -61,7 +61,7 @@ export class AppState extends Model<IAppState> implements IAppState {
 			payment: '',
 			email: '',
 			phone: '',
-			adress: '',
+			address: '',
 			items: [],
 			total: 0,
 		};
@@ -84,8 +84,8 @@ export class AppState extends Model<IAppState> implements IAppState {
 		if (!this.order.payment) {
 			errors.payment = settings.formErrors.payment;
 		}
-		if (!this.order.adress) {
-			errors.adress = settings.formErrors.adress;
+		if (!this.order.address) {
+			errors.address = settings.formErrors.address;
 		}
 		this.validationErrors = errors;
 		this.events.emit('orderFormErrors:change', this.validationErrors);

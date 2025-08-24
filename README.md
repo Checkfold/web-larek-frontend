@@ -128,7 +128,7 @@ interface IOrder {
     payment: string; // способ оплаты ('card' - онлайн, 'cash' - при получении)
     email: string;   // email покупателя для связи
     phone: string;   // телефон покупателя для связи
-    adress: string;  // адрес доставки товара
+    address: string;  // адрес доставки товара
     items: string[]; // массив ID товаров в заказе
     total: number;   // общая сумма заказа
 }
@@ -313,8 +313,8 @@ interface IOrder {
 1. _paymentButtons: Map<string, HTMLButtonElement> - коллекция кнопок выбора способа оплаты
 
 Сеттеры:
-1. adress: string - устанавливает значение поля адреса доставки
-2. payment: string, adress: string
+1. address: string - устанавливает значение поля адреса доставки
+2. payment: string, address: string
 
 Методы: 
 1. _initializePaymentButtons(): void - инициализация кнопок оплаты

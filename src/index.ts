@@ -118,8 +118,8 @@ events.on('order:open', () => {
 	modal.render({
 		content: order.render({
 			payment: appData.order.payment,
-			adress: appData.order.adress,
-			valid: !!appData.order.payment && !!appData.order.adress,
+			address: appData.order.address,
+			valid: !!appData.order.payment && !!appData.order.address,
 			errors: [],
 		}),
 	});

@@ -3,66 +3,50 @@ import { IEvents } from '../base/events';
 import { Form } from './Form';
 
 export class Order extends Form<Partial<TOrderForm>> implements TOrderForm {
-	protected _paymentButtons: Map<string, HTMLButtonElement>;
+	protected _buttonCard: HTMLButtonElement;
+	protected _buttonCash: HTMLButtonElement;
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 
-		this._paymentButtons = new Map();
-		this._initializePaymentButtons();
-		this._setupPaymentHandlers();
+		this._buttonCard = this.container.elements.namedItem('card') as HTMLButtonElement;
+		this._buttonCash = this.container.elements.namedItem('cash') as HTMLButtonElement;
+
+		this._buttonCard.addEventListener('click', () => {
+			this.toggleCard();
+		});
+
+		this._buttonCash.addEventListener('click', () => {
+			this.toggleCash();
+		});
 	}
 
-	set adress(value: string) {
-		const addressField = this.container.querySelector(
-			'[name="address"]'
-		) as HTMLInputElement;
-		if (addressField) {
-			addressField.value = value;
-		}
+	set address(value: string) {
+		(this.container.elements.namedItem('address') as HTMLInputElement).value = value;
 	}
 
-	set payment(method: string) {
-		if (method && this._paymentButtons.has(method)) {
-			this._updateButtonStates(method);
+	set payment(value: string) {
+		if (value) {
+			this.toggleClass(
+				this.container.elements.namedItem(value) as HTMLButtonElement,
+				'button_alt-active',
+				true
+			);
 		} else {
-			this._resetPaymentButtons();
+			this.toggleClass(this._buttonCard, 'button_alt-active', false);
+			this.toggleClass(this._buttonCash, 'button_alt-active', false);
 		}
 	}
 
-	private _initializePaymentButtons(): void {
-		const cardButton = this.container.querySelector(
-			'[name="card"]'
-		) as HTMLButtonElement;
-		const cashButton = this.container.querySelector(
-			'[name="cash"]'
-		) as HTMLButtonElement;
-
-		if (cardButton) this._paymentButtons.set('card', cardButton);
-		if (cashButton) this._paymentButtons.set('cash', cashButton);
+	toggleCard() {
+		this.toggleClass(this._buttonCard, 'button_alt-active', true);
+		this.toggleClass(this._buttonCash, 'button_alt-active', false);
+		this.onInputChange('payment', this._buttonCard.name);
 	}
 
-	private _setupPaymentHandlers(): void {
-		this._paymentButtons.forEach((button, method) => {
-			button.addEventListener('click', () => this._selectPaymentMethod(method));
-		});
-	}
-
-	private _selectPaymentMethod(method: string): void {
-		this._updateButtonStates(method);
-		this.onInputChange('payment', method);
-	}
-
-	private _updateButtonStates(selectedMethod: string): void {
-		this._paymentButtons.forEach((button, method) => {
-			const isActive = method === selectedMethod;
-			this.toggleClass(button, 'button_alt-active', isActive);
-		});
-	}
-
-	private _resetPaymentButtons(): void {
-		this._paymentButtons.forEach((button) => {
-			this.toggleClass(button, 'button_alt-active', false);
-		});
+	toggleCash() {
+		this.toggleClass(this._buttonCash, 'button_alt-active', true);
+		this.toggleClass(this._buttonCard, 'button_alt-active', false);
+		this.onInputChange('payment', this._buttonCash.name);
 	}
 }
