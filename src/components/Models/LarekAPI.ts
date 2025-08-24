@@ -20,7 +20,7 @@ export class LarekApi extends Api implements IStoreApiClient {
 		return this.get('/product').then((data: IProductCatalogResponse) =>
 			data.items.map((item) => ({
 				...item,
-				image: this.cdn + item.image,
+				image: this.cdn + item.image.replace('.svg','.png')
 			}))
 		);
 	}
