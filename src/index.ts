@@ -113,7 +113,6 @@ events.on('basket:delete', (item: IProduct) => {
 	events.emit('basket:open');
 });
 
-// 6. реакция на клик на кнопку "Оформить" в корзине > открыть можалку с первым шагом оформления заказа
 events.on('order:open', () => {
 	modal.render({
 		content: order.render({
@@ -125,7 +124,6 @@ events.on('order:open', () => {
 	});
 });
 
-// реакция на клики по кнопкам "Онлайн", "При получении" и на ввод текста в поле "Адрес" > сохранить данные в модель, валидация формы.
 events.on(
 	/^order\..*:change/,
 	(data: { field: keyof TOrderForm; value: string }) => {
@@ -133,7 +131,6 @@ events.on(
 	}
 );
 
-// реакция на изменение состояния валидации формы выбора типа оплаты и ввода адреса доставки
 events.on('orderFormErrors:change', (errors: Partial<TOrderForm>) => {
 	order.valid = Object.keys(errors).length > 0 ? false : true;
 	order.errors = Object.values(errors)
@@ -141,7 +138,6 @@ events.on('orderFormErrors:change', (errors: Partial<TOrderForm>) => {
 		.join('; ');
 });
 
-// реакция на кнопку "Далее" в модалке первого шага оформления заказа > открыть модалку со вторым шагом оформления заказа.
 events.on('order:submit', () => {
 	modal.render({
 		content: contacts.render({
@@ -153,14 +149,13 @@ events.on('order:submit', () => {
 	});
 });
 
-// реакция на ввод текста в поля "Телефон" и "Email" > сохранить данные в модель, валидация формы.
 events.on(
 	/^contacts\..*:change/,
 	(data: { field: keyof TContactsForm; value: string }) => {
 		appData.updateContactDetails(data.field, data.value);
 	}
 );
-// реакция на изменение состояния валидации формы ввода номера телефона и email
+
 events.on('contactsFormErrors:change', (errors: Partial<TContactsForm>) => {
 	contacts.valid = Object.keys(errors).length > 0 ? false : true;
 	contacts.errors = Object.values(errors)
@@ -168,7 +163,6 @@ events.on('contactsFormErrors:change', (errors: Partial<TContactsForm>) => {
 		.join('; ');
 });
 
-// реакция на кнопку "Оплатить" в модалке второго шага оформления заказа > значит обе формы валидны > отправить заказ на сервер, если все ок, то очистить корзину, открыть модалку успешной оплаты заказа.
 events.on('contacts:submit', () => {
 	api
 		.submitOrder(appData.order)
@@ -187,17 +181,14 @@ events.on('contacts:submit', () => {
 		.catch((err) => console.log(err));
 });
 
-// Блокируем прокрутку страницы если открыта модалка
 events.on('modal:open', () => {
 	page.locked = true;
 });
 
-// ... и разблокируем
 events.on('modal:close', () => {
 	page.locked = false;
 });
 
-// первоначальная загрузка каталога продуктов
 api
 	.fetchProductList()
 	.then((data) => {
