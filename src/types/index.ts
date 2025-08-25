@@ -14,6 +14,15 @@ export interface IOrderForm {
     address: string;
 }
 
+export interface IFormState {
+    isValid: boolean;
+    errors: string[];
+}
+
+export interface IModalData {
+    content: HTMLElement;
+}
+
 export interface IOrder extends IOrderForm {
     total: number;
     items: string[];

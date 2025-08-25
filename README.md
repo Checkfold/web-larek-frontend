@@ -146,6 +146,24 @@ interface IBasket {
 
 Предназначение: Описывает состояние корзины покупателя.
 
+#### Интерфейс IFormState
+```
+export interface IFormState {
+    isValid: boolean;
+    errors: string[];
+}
+```
+Предназначение: Определяет структуру для хранения состояния валидации формы. Он используется для отслеживания корректности заполнения формы и сбора ошибок валидации.
+
+#### Интерфейс IModalData
+```
+export interface IModalData {
+    content: HTMLElement;
+}
+```
+Предназначение: Определяет структуру данных для управления модальными окнами приложения. Он служит контейнером для контента, который должен отображаться в модальном окне.
+
+
 #### Интерфейс IOrderResult
 
 ```
@@ -154,7 +172,6 @@ interface IOrderSucces {
     total: number; // Итоговая сумма заказа
 }
 ```
-
 Предназначение: Результат успешного оформления заказа.
 
 #### Тип PaymentMethod
@@ -162,7 +179,6 @@ interface IOrderSucces {
 ```
 type PaymentMethod = 'online' | 'cash';
 ```
-
 Предназначение: Определяет допустимые способы оплаты в приложении.
 
 #### Тип FormErrors
@@ -170,7 +186,6 @@ type PaymentMethod = 'online' | 'cash';
 ```
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
 ```
-
 Предназначение: Тип FormErrors предназначен для хранения ошибок валидации формы заказа. Он представляет собой объект, где ключи соответствуют полям интерфейса IOrder, а значения - текстовым сообщениям об ошибках.
 
 Структура FormErrors:
@@ -204,7 +219,6 @@ export interface ILarekAPI {
 ## Описание классов
 
 #### Класс AppData
-
 Назначение класса: Класс AppData является центральным хранилищем состояния приложения (моделью данных). Он отвечает за управление данными товаров, корзины, заказов и обеспечивает синхронизацию между различными компонентами приложения через систему событий.
 
 Структура класса:
@@ -218,7 +232,6 @@ preview: IProduct = null; // Товар для предпросмотра
 ```
 
 ##### Основные методы:
-
 Управление товарами:
 1. loadProducts(products: IProduct[]) - загружает каталог товаров
 2. setPreview(product: IProduct) - устанавливает товар для просмотра
@@ -243,7 +256,6 @@ preview: IProduct = null; // Товар для предпросмотра
 5. order:ready - когда заказ готов к отправке
 
 #### Класс LarekAPI
-
 Назначение класса: Класс LarekAPI является реализацией интерфейса ILarekAPI и предоставляет методы для взаимодействия с backend-API интернет-магазина. Наследуется от базового класса Api и добавляет специфичную для приложения логику.
 
 Структура класса:
@@ -259,7 +271,6 @@ constructor(cdn: string, baseUrl: string, options?: RequestInit)
 3. options - опциональные настройки HTTP-запросов
 
 ##### Публичные методы: 
-
 1. fetchProductList()
 
 
@@ -303,40 +314,145 @@ private formatImageUrl(originalUrl: string): string
 1. Добавляет CDN base URL
 2. Заменяет расширение .svg на .png 
 
-#### Класс View<T>
-
-Назначение класса: Класс View<T> является абстрактным базовым классом для всех компонентов пользовательского интерфейса. Он предоставляет базовые методы для работы с DOM-элементами и управления их состоянием. Реализует паттерн "Представитель" (Presenter) для связи между данными и их представлением.
+#### Класс Component<T>
+Назначение класса: Класс Component<T> является абстрактным базовым классом для всех компонентов пользовательского интерфейса. Он предоставляет базовые методы для работы с DOM-элементами и управления их состоянием. Реализует паттерн "Представитель" (Presenter) для связи между данными и их представлением.
 
 Структура класса:
 
 Конструктор:
 ```
-constructor(protected readonly container: HTMLElement)
+protected constructor(protected readonly container: HTMLElement)
 ```
 1. container - корневой DOM-элемент, который представляет компонент
 
 ##### Публичные методы:
-1. switchClass(cssClass: string)
+1. toggleClass(element: HTMLElement, className: string, force?: boolean)
 ```
-switchClass(cssClass: string): void
+toggleClass(element: HTMLElement, className: string, force?: boolean): void
 ```
-Назначение: Переключает CSS класс на корневом элементе компонента. Использует classList.toggle() для добавления/удаления класса.
+Назначение: Переключает CSS класс на указанном элементе. Параметры: element - целевой DOM-элемент, className - имя CSS класса для переключения, force? - опциональный флаг принудительного добавления/удаления.
 
-2. render(data?: T): HTMLElement
+
+2. render(data?: Partial<T>): HTMLElement
 ```
-render(data?: T): HTMLElement
+render(data?: Partial<T>): HTMLElement
 ```
-Назначение: Основной метод для обновления и отображения компонента. Принимает 1 параметр data?: T - опциональные данные для отображения. Возвращает: HTMLElement - корневой элемент компонента
+Назначение: Основной метод для обновления и отображения компонента. Параметры: data?: Partial<T> - опциональные данные для частичного обновления. Возвращает: HTMLElement - корневой элемент компонента
 
 ##### Защищенные методы (для наследования):
-1. updateTextContent(element: HTMLElement, content: unknown)
+1. setText(element: HTMLElement, value: unknown)
 ```
-protected updateTextContent(element: HTMLElement, content: unknown): void
+protected setText(element: HTMLElement, value: unknown): void
 ```
-Назначение: Безопасное обновление текстового содержимого элемента. Проверяет существование элемента. Преобразует любое значение в строку. Предотвращает ошибки при отсутствии элемента
+Назначение: Устанавливает текстовое содержимое элемента. Проверяет существование элемента. Преобразует любое значение в строку. Безопасная установка textContent
 
-2. changeImageSource(imgElement: HTMLImageElement, source: string)
+2. setHidden(element: HTMLElement)
 ```
-protected changeImageSource(imgElement: HTMLImageElement, source: string): void
+protected setHidden(element: HTMLElement): void
 ```
-Назначение: Установка источника для изображения. Проверяет существование элемента изображения. Устанавливает src attribute.
+Назначение: Скрывает элемент через CSS. Устанавливает display: none
+
+3. setVisible(element: HTMLElement)
+```
+protected setVisible(element: HTMLElement): void
+```
+Назначение: Показывает элемент. Удаляет свойство display
+
+4. setImage(element: HTMLImageElement, src: string, alt?: string)
+```
+protected setImage(element: HTMLImageElement, src: string, alt?: string): void
+```
+Назначение: Устанавливает изображение с альтернативным текстом. Параметры: element - элемент изображения, src - URL изображения, alt? - опциональный альтернативный текст
+
+#### Класс Form<T>
+Назначение класса: Класс Form<T> является специализированным компонентом для работы с HTML-формами. Наследуется от Component<IFormState> и добавляет функциональность для обработки пользовательского ввода, валидации и отправки данных форм. Реализует паттерн "Наблюдатель" для обработки событий формы.
+
+Структура класса:
+
+Конструктор: 
+```
+constructor(protected container: HTMLFormElement, protected events: IEvents)
+```
+1. container - HTMLFormElement, корневой элемент формы
+2. events - экземпляр системы событий для коммуникации между компонентами
+
+##### Защищенные свойства
+
+```
+protected _submit: HTMLButtonElement;    // Кнопка отправки формы
+protected _errors: HTMLElement;          // Контейнер для отображения ошибок
+```
+
+##### Публичные методы и свойства
+1. Сеттер valid: boolean
+```
+set valid(value: boolean)
+```
+Назначение: Управляет состоянием кнопки отправки формы. Устанавливает атрибут disabled на кнопке в зависимости от валидности формы.
+
+2. Сеттер errors: string
+```
+set errors(value: string)
+```
+Назначение: Устанавливает текст ошибок валидации. Обновляет текстовое содержимое контейнера ошибок.
+
+3. Метод render(state: Partial<T> & IFormState)
+```
+render(state: Partial<T> & IFormState): HTMLElement
+```
+Назначение: Обновляет состояние формы и отображает её. 
+Параметры: state - комбинированный объект состояния, содержащий:
+    isValid - флаг валидности формы
+    errors - сообщения об ошибках
+    поля данных формы типа T
+
+##### Защищенные методы
+1. onInputChange(field: keyof T, value: string)
+```
+protected onInputChange(field: keyof T, value: string): void
+```
+Назначение: Обрабатывает изменения в полях ввода. Генерирует событие изменения поля в формате {formName}.{fieldName}:change
+
+#### Класс Modal
+Назначение класса: Класс Modal является компонентом для управления модальными окнами приложения. Наследуется от Component<IModalData> и предоставляет функциональность для открытия, закрытия и управления содержимым модальных окон. Реализует паттерн "Команда" для управления состоянием модального окна.
+
+Структура класса:
+
+Конструктор:
+```
+constructor(container: HTMLElement, protected events: IEvents)
+```
+container - корневой элемент модального окна
+events - экземпляр системы событий для коммуникации
+
+##### Защищенные свойства
+```
+protected _closeButton: HTMLButtonElement; // Кнопка закрытия модального окна
+protected _content: HTMLElement;           // Контейнер для содержимого модального окна
+```
+
+##### Публичные методы и свойства
+1. Сеттер content: HTMLElement
+```
+set content(value: HTMLElement)
+```
+Назначение: Устанавливает содержимое модального окна. Полностью заменяет дочерние элементы в контейнере содержимого.
+
+2. Метод open()
+```
+open(): void
+```
+Назначение: Открывает модальное окно. Добавляет CSS класс modal_active для отображения окна. Генерирует событие modal:open
+
+3. Метод close()
+```
+close(): void
+```
+Назначение: Закрывает модальное окно. Удаляет CSS класс modal_active для скрытия окна. Очищает содержимое модального окна. Генерирует событие modal:close
+
+4. Метод render(data: IModalData)
+```
+render(data: IModalData): HTMLElement
+```
+Назначение: Обновляет и открывает модальное окно. Обновляет базовый компонент с переданными данными. Открывает модальное окно. Возвращает корневой элемент модального окна. Принимает параметром data - объект с данными для отображения в модальном окне. 
+
