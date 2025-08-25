@@ -13,9 +13,9 @@
   padding-bottom: 5vh;
   box-sizing: border-box;
 
-  &_active {
-    display: flex;
-  }
+  // &_active {
+  //   display: flex;
+  // }
 
   &__container {
     @include mixins.container;
