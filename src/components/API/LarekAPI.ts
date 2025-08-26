@@ -1,4 +1,4 @@
-import { ILarekAPI, IOrder, IOrderSucces, IProduct } from '../../types';
+import { ILarekAPI, IOrder, IOrderSuccess, IProduct } from '../../types';
 import { Api, ApiListResponse } from '../base/api';
 
 export class LarekAPI extends Api implements ILarekAPI {
@@ -21,8 +21,8 @@ export class LarekAPI extends Api implements ILarekAPI {
 		}));
 	}
 
-    async submitOrder(orderData: IOrder): Promise<IOrderSucces> {
-        const result = await this.post('/order', orderData) as IOrderSucces;
+    async submitOrder(orderData: IOrder): Promise<IOrderSuccess> {
+        const result = await this.post('/order', orderData) as IOrderSuccess;
         return result;
     }
 }

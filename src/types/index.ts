@@ -36,7 +36,7 @@ export interface IBasket {
     total: number;
 }
 
-export interface IOrderSucces {
+export interface IOrderSuccess {
     id: string;
     total: number;
 }
@@ -47,5 +47,5 @@ export type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 export interface ILarekAPI {
     fetchProductList: () => Promise<IProduct[]>;
-    submitOrder: (order:IOrder) => Promise<IOrderSucces>;
+    submitOrder: (order:IOrder) => Promise<IOrderSuccess>;
 }

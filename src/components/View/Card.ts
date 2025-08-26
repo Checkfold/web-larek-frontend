@@ -51,9 +51,27 @@ export class Card extends Component<IProduct> {
         }
     }
 
+    private getCategoryClass(category: string): string {
+        const categoryMap: Record<string, string> = {
+            'софт-скил': 'card__category_soft',
+            'хард-скил': 'card__category_hard',
+            'другое': 'card__category_other',
+            'дополнительное': 'card__category_additional',
+            'кнопка': 'card__category_button'
+        };
+        
+        return categoryMap[category.toLowerCase()] || '';
+    }
+
+
     set category(value: string) {
         this.setText(this._category, value);
-        this.toggleClass(this._category, value)
+        this.toggleClass(this._category, value);
+
+        const categoryClass = this.getCategoryClass(value);
+            if (categoryClass) {
+                this._category.classList.add(categoryClass);
+            }
     }
 
     set button(value: string) {

@@ -39,8 +39,10 @@ export class Page extends Component<IPage> {
     set locked(value: boolean) {
         if (value) {
             this._wrapper.classList.add('page__wrapper_locked');
+            document.body.style.overflow = 'hidden'; // Блокируем скролл
         } else {
             this._wrapper.classList.remove('page__wrapper_locked');
+            document.body.style.overflow = ''; // Разблокируем скролл
         }
     }
 }
