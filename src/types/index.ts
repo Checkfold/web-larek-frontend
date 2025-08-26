@@ -28,7 +28,9 @@ export interface IOrder extends IOrderForm {
     items: string[];
 }
 
-
+export interface ICardActions {
+    onClick: (event: MouseEvent) => void;
+}
 export interface IBasket {
     items: string[];
     total: number;
