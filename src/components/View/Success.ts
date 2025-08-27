@@ -1,22 +1,22 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
-interface ISuccess {
-    total: number;
-}
-
 interface ISuccessActions {
     onClick: () => void;
 }
 
-export class Success extends Component<ISuccess> {
+export class Success extends Component<{}> {
     protected _close: HTMLElement;
-    protected _total: HTMLElement;
+    protected _description: HTMLElement;
 
     constructor(container: HTMLElement, actions: ISuccessActions) {
         super(container);
 
-        this._close = ensureElement<HTMLElement>('.state__action', this.container);
+        // Кнопка закрытия
+        this._close = ensureElement<HTMLElement>('.order-success__close', this.container);
+
+        // Абзац с суммой
+        this._description = ensureElement<HTMLElement>('.order-success__description', this.container);
 
         if (actions?.onClick) {
             this._close.addEventListener('click', actions.onClick);
@@ -24,6 +24,10 @@ export class Success extends Component<ISuccess> {
     }
 
     set total(value: number) {
-        this.setText(this._total, `Списано ${value} синапсов`);
+        this.setText(this._description, `Списано ${value} синапсов`);
+    }
+
+    render() {
+        return this.container;
     }
 }

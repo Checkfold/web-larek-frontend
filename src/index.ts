@@ -12,6 +12,7 @@ import { cloneTemplate, ensureElement } from './utils/utils';
 import { IProduct } from './types';
 import { Order } from './components/VIew/Order';
 import { Contacts } from './components/VIew/Contacts';
+import { Success } from './components/VIew/Success';
 
 const events = new EventEmitter();
 const api = new LarekAPI(CDN_URL, API_URL);
@@ -19,6 +20,10 @@ const data = new AppData(events);
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const basket = new Basket(cloneTemplate<HTMLElement>('#basket'), events); 
+
+const orderForm = new Order(cloneTemplate<HTMLFormElement>('#order'), events);
+const contactsForm = new Contacts(cloneTemplate<HTMLFormElement>('#contacts'), events);
+const successTemplate = cloneTemplate<HTMLElement>('#success');
 
 events.on('modal:open', () => {
     page.locked = true;
@@ -31,6 +36,8 @@ events.on('modal:close', () => {
 events.on('basket:updated', () => {
     page.counter = data.getBasketCount();
 });
+
+
 
 events.on('bids:open', () => {
     const updateBasketView = () => {
@@ -111,6 +118,56 @@ events.on('product:viewed', (product: IProduct) => {
     previewCard.button = isInBasket ? 'Удалить из корзины' : 'Купить';
     
     modal.content = previewCard.render();
+    modal.open();
+});
+
+events.on('order:open', () => {
+    modal.render({
+        content: orderForm.render({
+            payment: '',
+            address: '',
+            isValid: false,
+            errors: []
+        })
+    })
+})
+
+events.on('order:submit', () => {
+    modal.render({
+        content: contactsForm.render({
+            email: '',
+            phone: '',
+            isValid: false,
+            errors: []
+        })
+    });
+
+    modal.open();
+});
+
+events.on('contacts:submit', () => {
+    if (!contactsForm.valid) return;
+
+    // Берём total из data.basket.total до очистки корзины
+    const total = data.basket.total;
+
+    // Очищаем корзину
+    data.basket.items = [];
+    data.basket.total = 0;
+
+    // Обновляем счётчик корзины
+    page.counter = data.getBasketCount();
+
+    // Создаём и показываем окно успеха
+    const success = new Success(cloneTemplate<HTMLElement>('#success'), {
+        onClick: () => modal.close()
+    });
+
+    success.total = total;
+
+    modal.render({
+        content: success.render()
+    });
     modal.open();
 });
 
