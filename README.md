@@ -525,19 +525,19 @@ protected setImage(element: HTMLImageElement, src: string, alt?: string): void
 
 Структура класса:
 
-Конструктор: 
-```
-constructor(protected container: HTMLFormElement, protected events: IEvents)
-```
-1. container - HTMLFormElement, корневой элемент формы
-2. events - экземпляр системы событий для коммуникации между компонентами
-
 ##### Защищенные свойства
 
 ```
 protected _submit: HTMLButtonElement;    // Кнопка отправки формы
 protected _errors: HTMLElement;          // Контейнер для отображения ошибок
 ```
+
+##### Конструктор: 
+```
+constructor(protected container: HTMLFormElement, protected events: IEvents)
+```
+1. container - HTMLFormElement, корневой элемент формы
+2. events - экземпляр системы событий для коммуникации между компонентами
 
 ##### Публичные методы и свойства
 1. Сеттер valid: boolean
@@ -576,18 +576,18 @@ protected onInputChange(field: keyof T, value: string): void
 
 Структура класса:
 
-Конструктор:
-```
-constructor(container: HTMLElement, protected events: IEvents)
-```
-container - корневой элемент модального окна
-events - экземпляр системы событий для коммуникации
-
 ##### Защищенные свойства
 ```
 protected _closeButton: HTMLButtonElement; // Кнопка закрытия модального окна
 protected _content: HTMLElement;           // Контейнер для содержимого модального окна
 ```
+
+##### Конструктор:
+```
+constructor(container: HTMLElement, protected events: IEvents)
+```
+container - корневой элемент модального окна
+events - экземпляр системы событий для коммуникации
 
 ##### Публичные методы и свойства
 1. Сеттер content: HTMLElement
