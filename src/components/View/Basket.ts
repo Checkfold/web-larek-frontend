@@ -16,40 +16,64 @@ export class Basket extends Component<IBasketView> {
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
 
+        // Исправляем селекторы согласно HTML шаблону
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-        this._total = this.container.querySelector('.basket__total');
-        this._button = this.container.querySelector('.basket__action');
+        this._total = ensureElement<HTMLElement>('.basket__price', this.container); // basket__price вместо basket__total
+        this._button = ensureElement<HTMLElement>('.basket__button', this.container); // basket__button вместо basket__action
 
         if (this._button) {
             this._button.addEventListener('click', () => {
                 events.emit('order:open');
             });
         }
-
-        this.items = [];
     }
 
     set items(items: HTMLElement[]) {
         if (items.length) {
             this._list.replaceChildren(...items);
-            this._button.removeAttribute('disabled');
+            if (this._button) {
+                this._button.removeAttribute('disabled');
+            }
         } else {
             this._list.replaceChildren(createElement<HTMLParagraphElement>('p', {
                 textContent: 'Корзина пуста'
             }));
-            this._button.setAttribute('disabled', 'disabled')
+            if (this._button) {
+                this._button.setAttribute('disabled', 'disabled');
+            }
         }
     }
 
     set selected(items: string[]) {
-        if (items.length) {
-            this.setDisabled(this._button, false);
-        } else {
-            this.setDisabled(this._button, true);
+        if (this._button) {
+            if (items.length) {
+                this.setDisabled(this._button, false);
+            } else {
+                this.setDisabled(this._button, true);
+            }
         }
     }
 
     set total(total: number) {
         this.setText(this._total, `${total} синапсов`);
+    }
+
+    render(data?: Partial<IBasketView>): HTMLElement {
+        super.render(data);
+        
+        // Обновляем элементы DOM на основе переданных данных
+        if (data) {
+            if (data.items !== undefined) {
+                this.items = data.items;
+            }
+            if (data.total !== undefined) {
+                this.total = data.total;
+            }
+            if (data.selected !== undefined) {
+                this.selected = data.selected;
+            }
+        }
+        
+        return this.container;
     }
 }

@@ -1,3 +1,4 @@
+// Импорты
 import { LarekAPI } from './components/API/LarekAPI';
 import { EventEmitter } from './components/base/events';
 import { Modal } from './components/base/Modal';
@@ -9,15 +10,60 @@ import './scss/styles.scss';
 import { API_URL, CDN_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { IProduct } from './types';
+import { Order } from './components/VIew/Order';
+import { Contacts } from './components/VIew/Contacts';
 
 const events = new EventEmitter();
 const api = new LarekAPI(CDN_URL, API_URL);
 const data = new AppData(events);
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
+const basket = new Basket(cloneTemplate<HTMLElement>('#basket'), events); 
 
+events.on('modal:open', () => {
+    page.locked = true;
+});
 
-// Обработчик обновления товаров
+events.on('modal:close', () => {
+    page.locked = false;
+});
+
+events.on('basket:updated', () => {
+    page.counter = data.getBasketCount();
+});
+
+events.on('bids:open', () => {
+    const updateBasketView = () => {
+        const basketItems = data.basket.items.map((id, index) => {
+            const product = data.products.find(p => p.id === id);
+            if (!product) return null;
+
+            const item = new Card(cloneTemplate<HTMLElement>('#card-basket'), {
+                onClick: () => {
+                    data.deleteBasket(product);
+                    updateBasketView();
+                }
+            });
+
+            return item.render({
+                title: product.title,
+                price: product.price,
+                index: index + 1 
+            });
+        }).filter(Boolean);
+
+        basket.render({
+            items: basketItems,
+            total: data.basket.total,
+            selected: data.basket.items
+        });
+    };
+
+    updateBasketView();
+    modal.content = basket.render(); 
+    modal.open();
+});
+
 events.on('products:updated', () => {
     const catalogItems = data.products.map(product => {
         const card = new Card(cloneTemplate<HTMLElement>('#card-catalog'), {
@@ -36,44 +82,38 @@ events.on('products:updated', () => {
     });
     
     page.catalog = catalogItems;
+    page.counter = data.getBasketCount();
 });
 
-// Обработчик просмотра товара с правильной типизацией
-events.on('product:viewed', (data: IProduct) => {
-    // Создаем карточку для превью
+events.on('product:viewed', (product: IProduct) => {
+    const isInBasket = data.isProductInBasket(product.id);
+    
     const previewCard = new Card(cloneTemplate<HTMLElement>('#card-preview'), {
         onClick: () => {
-            // Здесь будет логика добавления в корзину
-            console.log('Добавить в корзину:', data.title);
+            if (isInBasket) {
+                data.deleteBasket(product);
+            } else {
+                data.addBasket(product);
+            }
+            modal.close();
         }
     });
 
-    // Используем правильные свойства IProduct
     previewCard.render({
-        id: data.id,
-        title: data.title,
-        image: data.image,
-        category: data.category,
-        description: data.description,
-        price: data.price
+        id: product.id,
+        title: product.title,
+        image: product.image,
+        category: product.category,
+        description: product.description,
+        price: product.price
     });
     
-    // Открываем модальное окно с превью - используем публичный метод
+    previewCard.button = isInBasket ? 'Удалить из корзины' : 'Купить';
+    
     modal.content = previewCard.render();
     modal.open();
 });
 
-// Блокировка скролла при открытии модального окна
-events.on('modal:open', () => {
-    page.locked = true;
-});
-
-// Разблокировка скролла при закрытии модального окна
-events.on('modal:close', () => {
-    page.locked = false;
-});
-
-// Загрузка товаров
 api.fetchProductList()
     .then(products => {
         data.loadProducts(products);

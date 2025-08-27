@@ -1,13 +1,14 @@
 import { ICardActions, IProduct } from "../../types";
 import { Component } from "../base/Component";
 
-export class Card extends Component<IProduct> {
+export class Card extends Component<IProduct & { index?: number }> {
     protected _title: HTMLElement;
     protected _image?: HTMLImageElement;
     protected _description?: HTMLElement;
     protected _category?: HTMLElement;
     protected _button?: HTMLButtonElement;
     protected _price: HTMLElement;
+    protected _index?: HTMLElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
@@ -18,6 +19,7 @@ export class Card extends Component<IProduct> {
         this._category = container.querySelector(".card__category");
         this._button = container.querySelector(".card__button");
         this._price = container.querySelector(".card__price");
+        this._index = container.querySelector(".basket__item-index");
 
         if (actions?.onClick) {
             if (this._button) {
@@ -48,6 +50,12 @@ export class Card extends Component<IProduct> {
         this.setText(this._price, value ? `${value} синапсов` : "Бесценно");
         if (this._button) {
             this._button.disabled = !value;
+        }
+    }
+
+     set index(value: number) {
+        if (this._index) {
+            this.setText(this._index, String(value));
         }
     }
 

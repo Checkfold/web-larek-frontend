@@ -22,7 +22,7 @@ export class Form<T> extends Component<IFormState> {
 
         this.container.addEventListener('submit', (evt: Event) => {
             evt.preventDefault();
-            this.events.emit(`${this.container.name}: submit`)
+            this.events.emit(`${this.container.name}:submit`)
         });
     }
 

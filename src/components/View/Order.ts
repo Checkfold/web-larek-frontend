@@ -7,7 +7,7 @@ export class Order extends Form<IOrderForm> {
     protected _onlineButton: HTMLButtonElement;
     protected _cashButton: HTMLButtonElement;
 
-    constructor(events: IEvents, container: HTMLFormElement) {
+    constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
         this._onlineButton = this.findButton('online')
