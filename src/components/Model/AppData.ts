@@ -27,7 +27,6 @@ export class AppData {
 
 	constructor(protected events: IEvents) {}
 
-	// Загрузка товаров
 	loadProducts(products: IProduct[]) {
 		this.products = products;
 		this.events.emit('products:updated', this.products);
@@ -46,12 +45,11 @@ export class AppData {
 	}
 
 	clearBasket() {
-		this.basket.items.length = 0; // Очищаем массив
+		this.basket.items.length = 0;
 		this.basket.total = 0;
 		this.events.emit('basket:updated', this.basket);
 	}
 
-	// Получаем количество товаров в корзине
 	getBasketCount(): number {
 		return this.basket.items.length;
 	}
@@ -69,7 +67,6 @@ export class AppData {
 		this.order.payment = method;
 	}
 
-	// Изменение поля заказа
     updateField(field: keyof IOrderForm, value: string) {
         if (field === 'payment') {
             this.setPaymentMethod(value as paymentMethod);
@@ -84,7 +81,6 @@ export class AppData {
         }
     }
 
-    // Проверка заполненности полей
     checkFields(): boolean {
     const errors: FormErrors = {};
     const fieldsToCheck = ['payment', 'address', 'email', 'phone'] as const;

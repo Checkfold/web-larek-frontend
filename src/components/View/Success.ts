@@ -12,10 +12,8 @@ export class Success extends Component<{}> {
     constructor(container: HTMLElement, actions: ISuccessActions) {
         super(container);
 
-        // Кнопка закрытия
         this._close = ensureElement<HTMLElement>('.order-success__close', this.container);
 
-        // Абзац с суммой
         this._description = ensureElement<HTMLElement>('.order-success__description', this.container);
 
         if (actions?.onClick) {

@@ -52,11 +52,9 @@ export class Order extends Form<IOrderForm> {
     }
 
     private getErrorMessage(): string {
-        // если поле адрес пустое и пользователь что-то сделал → ошибка адреса
         if (!this._address && (this._addressTouched || this._paymentTouched)) {
             return 'Необходимо указать адрес';
         }
-        // если адрес есть, но способ оплаты не выбран → ошибка оплаты
         if (!this._payment && (this._paymentTouched || this._addressTouched)) {
             return 'Необходимо выбрать способ оплаты';
         }
@@ -66,11 +64,10 @@ export class Order extends Form<IOrderForm> {
     private updateValidity(): void {
     const errorMessage = this.getErrorMessage();
 
-    // если форма ещё не тронута — кнопка заблокирована
     const formTouched = this._addressTouched || this._paymentTouched;
 
     this.errors = errorMessage;
-    this.valid = formTouched && !errorMessage; // кнопка активна только после первого действия
+    this.valid = formTouched && !errorMessage;
 }
 
     set payment(value: paymentMethod) {

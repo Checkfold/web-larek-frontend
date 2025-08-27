@@ -55,7 +55,6 @@ export class Contacts extends Form<IOrderForm> {
     this.errors = errorMessage;
     this._valid = formTouched && !errorMessage;
 
-    // активируем/деактивируем кнопку
     super.valid = this._valid;
 }
 

@@ -16,10 +16,9 @@ export class Basket extends Component<IBasketView> {
     constructor(container: HTMLElement, protected events: IEvents) {
         super(container);
 
-        // Исправляем селекторы согласно HTML шаблону
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
-        this._total = ensureElement<HTMLElement>('.basket__price', this.container); // basket__price вместо basket__total
-        this._button = ensureElement<HTMLElement>('.basket__button', this.container); // basket__button вместо basket__action
+        this._total = ensureElement<HTMLElement>('.basket__price', this.container); 
+        this._button = ensureElement<HTMLElement>('.basket__button', this.container);
 
         if (this._button) {
             this._button.addEventListener('click', () => {
@@ -61,7 +60,6 @@ export class Basket extends Component<IBasketView> {
     render(data?: Partial<IBasketView>): HTMLElement {
         super.render(data);
         
-        // Обновляем элементы DOM на основе переданных данных
         if (data) {
             if (data.items !== undefined) {
                 this.items = data.items;

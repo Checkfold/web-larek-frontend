@@ -148,17 +148,13 @@ events.on('order:submit', () => {
 events.on('contacts:submit', () => {
     if (!contactsForm.valid) return;
 
-    // Берём total из data.basket.total до очистки корзины
     const total = data.basket.total;
 
-    // Очищаем корзину
     data.basket.items = [];
     data.basket.total = 0;
 
-    // Обновляем счётчик корзины
     page.counter = data.getBasketCount();
 
-    // Создаём и показываем окно успеха
     const success = new Success(cloneTemplate<HTMLElement>('#success'), {
         onClick: () => modal.close()
     });
