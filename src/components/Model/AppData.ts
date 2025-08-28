@@ -1,110 +1,93 @@
 import {
-	FormErrors,
-	IBasket,
-	IOrder,
-	IOrderForm,
-	IProduct,
-	paymentMethod,
+    IProduct,
+    IOrderForm,
+    IBasket,
+    FormErrors,
+    paymentMethod
 } from '../../types';
 import { IEvents } from '../base/events';
 
 export class AppData {
-	products: IProduct[] = [];
-	order: IOrder = {
-		payment: '',
-		email: '',
-		phone: '',
-		address: '',
-		total: 0,
-		items: [],
-	};
-	basket: IBasket = {
-		items: [],
-		total: 0,
-	};
-	formErrors: FormErrors = {};
-	preview: IProduct = null;
+    products: IProduct[] = [];
+    order: IOrderForm & { payment: paymentMethod | '' } = {
+        email: '',
+        phone: '',
+        address: '',
+        payment: ''
+    };
+    basket: IBasket = {
+        items: [],
+        total: 0
+    };
+    formErrors: FormErrors = {};
+    preview: IProduct = null;
 
-	constructor(protected events: IEvents) {}
+    constructor(protected events: IEvents) {}
 
-	loadProducts(products: IProduct[]) {
-		this.products = products;
-		this.events.emit('products:updated', this.products);
-	}
-
-	addBasket(product: IProduct) {
-		this.basket.items.push(product.id);
-		this.basket.total = this.basket.total + product.price;
-		this.events.emit('basket:updated', this.basket);
-	}
-
-	deleteBasket(product: IProduct) {
-		this.basket.items = this.basket.items.filter(id => id !== product.id);
-        this.basket.total = this.basket.total - product.price;
-        this.events.emit('basket:updated', this.basket)
-	}
-
-	clearBasket() {
-		this.basket.items.length = 0;
-		this.basket.total = 0;
-		this.events.emit('basket:updated', this.basket);
-	}
-
-	getBasketCount(): number {
-		return this.basket.items.length;
-	}
-
-	isProductInBasket(productId: string): boolean {
-		return this.basket.items.some((id) => id === productId);
-	}
-
-	setPreview(product: IProduct) {
-		this.preview = product;
-		this.events.emit('product:viewed', this.preview);
-	}
-
-	setPaymentMethod(method: paymentMethod) {
-		this.order.payment = method;
-	}
-
-    updateField(field: keyof IOrderForm, value: string) {
-        if (field === 'payment') {
-            this.setPaymentMethod(value as paymentMethod);
-        } else {
-            this.order[field] = value;
-        }
-
-        if (this.checkFields()) {
-            this.order.total = this.basket.total;
-            this.order.items = this.basket.items;
-            this.events.emit('order:ready', this.order);
-        }
+    loadProducts(products: IProduct[]) {
+        this.products = products;
+        this.events.emit('products:updated', this.products);
     }
+
+    addBasket(product: IProduct) {
+        this.basket.items.push(product.id);
+        this.basket.total += product.price;
+        this.events.emit('basket:updated');
+    }
+
+    deleteBasket(product: IProduct) {
+        this.basket.items = this.basket.items.filter(id => id !== product.id);
+        this.basket.total -= product.price;
+        this.events.emit('basket:updated');
+    }
+
+    clearBasket() {
+        this.basket.items = [];
+        this.basket.total = 0;
+        this.events.emit('basket:updated');
+    }
+
+    getBasketCount(): number {
+        return this.basket.items.length;
+    }
+
+    isProductInBasket(productId: string): boolean {
+        return this.basket.items.includes(productId);
+    }
+
+    setPreview(product: IProduct) {
+        this.preview = product;
+        this.events.emit('product:viewed', this.preview);
+    }
+
+    setPaymentMethod(method: paymentMethod) {
+        this.order.payment = method;
+        this.checkFields();
+    }
+
+  updateField(field: keyof IOrderForm, value: string) {
+    if (field === 'payment') {
+        this.order.payment = value as 'online' | 'cash' | '';
+    } else {
+        this.order[field] = value;
+    }
+    this.checkFields();
+}
 
     checkFields(): boolean {
-    const errors: FormErrors = {};
-    const fieldsToCheck = ['payment', 'address', 'email', 'phone'] as const;
+        const errors: FormErrors = {};
 
-    for (const field of fieldsToCheck) {
-        if (!this.order[field]) {
-            errors[field] = this.getErrorMessage(field);
+        if (!this.order.email?.trim()) {
+            errors.email = 'Необходимо указать Email';
         }
+
+        if (!this.order.phone?.trim()) {
+            errors.phone = 'Необходимо указать номер телефона';
+        }
+
+        this.formErrors = errors;
+        this.events.emit('errors:updated', this.formErrors);
+
+        return Object.keys(errors).length === 0;
     }
-
-    this.formErrors = errors;
-    this.events.emit('errors:updated', this.formErrors);
-    
-    return Object.keys(errors).length === 0;
-}
-
-private getErrorMessage(field: keyof IOrderForm): string {
-    const messages = {
-        payment: 'Необходимо указать способ оплаты',
-        address: 'Необходимо указать адресс',
-        email: 'Необходимо указать Email',
-        phone: 'Необходимо указать номер телефона'
-    };
-    return messages[field];
-}
-
 }

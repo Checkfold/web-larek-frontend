@@ -23,6 +23,7 @@ export interface IModalData {
     content: HTMLElement;
 }
 
+// Финальный заказ для API = данные формы + данные корзины
 export interface IOrder extends IOrderForm {
     total: number;
     items: string[];
@@ -31,6 +32,7 @@ export interface IOrder extends IOrderForm {
 export interface ICardActions {
     onClick: (event: MouseEvent) => void;
 }
+
 export interface IBasket {
     items: string[];
     total: number;
@@ -43,9 +45,10 @@ export interface IOrderSuccess {
 
 export type paymentMethod = 'online' | 'cash';
 
-export type FormErrors = Partial<Record<keyof IOrder, string>>;
+// Ошибки должны проверяться только по данным формы
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
 
 export interface ILarekAPI {
     fetchProductList: () => Promise<IProduct[]>;
-    submitOrder: (order:IOrder) => Promise<IOrderSuccess>;
+    submitOrder: (order: IOrder) => Promise<IOrderSuccess>;
 }
