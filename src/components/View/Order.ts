@@ -9,32 +9,21 @@ export class Order extends Form<IOrderForm> {
     protected _addressField: HTMLInputElement;
 
     private _payment?: paymentMethod;
-    private _address: string = '';
-
-    private _addressTouched = false;
-    private _paymentTouched = false;
+    private _address: string;
 
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
-        this._onlineButton = this.findButton('online');
-        this._cashButton = this.findButton('cash');
+        this._onlineButton = ensureElement<HTMLButtonElement>('button[name="online"]', this.container)
+        this._cashButton = ensureElement<HTMLButtonElement>('button[name="cash"]', this.container)
         this._addressField = ensureElement<HTMLInputElement>('input[name="address"]', this.container);
 
         this.setupPaymentHandlers();
         this.setupAddressHandler();
-        this.updateValidity();
-    }
-
-    private findButton(name: string): HTMLButtonElement {
-        return ensureElement<HTMLButtonElement>(`button[name="${name}"]`, this.container);
     }
 
     private handlePaymentSelection(method: paymentMethod): void {
-        this.payment = method;
-        this._paymentTouched = true;
         this.onInputChange('payment', method);
-        this.updateValidity();
     }
 
     private setupPaymentHandlers(): void {
@@ -44,47 +33,21 @@ export class Order extends Form<IOrderForm> {
 
     private setupAddressHandler(): void {
         this._addressField.addEventListener('input', () => {
-            this._addressTouched = true;
             this._address = this._addressField.value.trim();
             this.onInputChange('address', this._address);
-            this.updateValidity();
         });
     }
-
-    private getErrorMessage(): string {
-        if (!this._address && (this._addressTouched || this._paymentTouched)) {
-            return 'Необходимо указать адрес';
-        }
-        if (!this._payment && (this._paymentTouched || this._addressTouched)) {
-            return 'Необходимо выбрать способ оплаты';
-        }
-        return '';
-    }
-
-    private updateValidity(): void {
-    const errorMessage = this.getErrorMessage();
-
-    const formTouched = this._addressTouched || this._paymentTouched;
-
-    this.errors = errorMessage;
-    this.valid = formTouched && !errorMessage;
-}
 
     set payment(value: paymentMethod) {
         this._payment = value;
         const isOnlineSelected = value === 'online';
         const isCashSelected = value === 'cash';
-        
+
         this._onlineButton.classList.toggle('button_alt-active', isOnlineSelected);
         this._cashButton.classList.toggle('button_alt-active', isCashSelected);
-        this.updateValidity();
     }
 
     set address(value: string) {
         this._address = value.trim();
-        if (this._addressField) {
-            this._addressField.value = this._address;
-        }
-        this.updateValidity();
     }
 }

@@ -6,9 +6,9 @@ import { Basket } from './components/View/Basket';
 import { Card } from './components/View/Card';
 import { Page } from './components/View/Page';
 import './scss/styles.scss';
-import { API_URL, CDN_URL } from './utils/constants';
+import { API_URL, CDN_URL, fieldsToForms } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { IOrder, IProduct, IOrderForm } from './types';
+import { IOrder, IProduct, FormErrors, paymentMethod } from './types';
 import { Order } from './components/View/Order';
 import { Contacts } from './components/View/Contacts';
 import { Success } from './components/View/Success';
@@ -129,31 +129,73 @@ events.on('order:submit', () => {
 });
 
 events.on('contacts:submit', () => {
-    if (!data.checkFields()) return; 
-
     const finalOrder: IOrder = {
         ...data.order,
         total: data.basket.total,
         items: [...data.basket.items]
     };
 
-    data.clearBasket();
-
-    const success = new Success(cloneTemplate<HTMLElement>('#success'), {
-        onClick: () => {
-            modal.close();
-            api.submitOrder(finalOrder);
-        }
-    });
-
-    success.total = finalOrder.total;
-
-    modal.render({ content: success.render() });
-    modal.open();
+    api.submitOrder(finalOrder)
+        .then(() => {
+            data.clearBasket();
+            const success = new Success(cloneTemplate<HTMLElement>('#success'), {
+                onClick: () => {
+                    modal.close();
+                }
+            });
+            success.total = finalOrder.total;
+            modal.render({ content: success.render() });
+            modal.open();
+        })
+        .catch(error => console.error('Ошибка загрузки товаров:', error));
 });
 
-events.on('contacts:field-change', ({ field, value }: { field: keyof IOrderForm, value: string }) => {
+events.on('contacts.email:field-change', ({ field, value }: { field: keyof FormErrors, value: string }) => {
     data.updateField(field, value);
+    contactsForm.email = value;
+});
+
+events.on('contacts.phone:field-change', ({ field, value }: { field: keyof FormErrors, value: string }) => {
+    data.updateField(field, value);
+    contactsForm.phone = value;
+});
+
+events.on('order.payment:field-change', ({ field, value }: { field: keyof FormErrors, value: paymentMethod }) => {
+    data.updateField(field, value);
+    orderForm.payment = value;
+});
+
+events.on('order.address:field-change', ({ field, value }: { field: keyof FormErrors, value: string }) => {
+    data.updateField(field, value);
+    orderForm.address = value;
+});
+
+events.on('errors:updated', ({ field }: { field: keyof FormErrors, }) => {
+    if (fieldsToForms[field] === 'contacts') {
+        const isValid = !!(data.order.phone && data.order.email)
+
+        contactsForm.valid = isValid;
+
+        if (isValid) {
+            contactsForm.errors = '';
+            return;
+        }
+
+        contactsForm.errors = data.formErrors[field];
+    }
+
+    if (fieldsToForms[field] === 'order') {
+        const isValid = !!(data.order.address && data.order.payment)
+
+        orderForm.valid = isValid;
+
+        if (isValid) {
+            orderForm.errors = '';
+            return;
+        }
+
+        orderForm.errors = data.formErrors[field];
+    }
 });
 
 api.fetchProductList()

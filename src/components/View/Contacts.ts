@@ -1,4 +1,5 @@
-import { IOrderForm, FormErrors } from '../../types';
+import { IOrderForm} from '../../types';
+import { ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/events';
 import { Form } from '../base/Form';
 
@@ -9,30 +10,23 @@ export class Contacts extends Form<IOrderForm> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
-        this._emailField = this.container.querySelector<HTMLInputElement>('input[name="email"]')!;
-        this._phoneField = this.container.querySelector<HTMLInputElement>('input[name="phone"]')!;
+        this._emailField = ensureElement<HTMLInputElement>('input[name="email"]', this.container);
+        this._phoneField = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);
 
         this._emailField.addEventListener('input', () => {
-            events.emit('contacts:field-change', { field: 'email', value: this._emailField.value });
+           this.onInputChange('email', this._emailField.value);
         });
 
         this._phoneField.addEventListener('input', () => {
-            events.emit('contacts:field-change', { field: 'phone', value: this._phoneField.value });
-        });
-
-        events.on('errors:updated', (errors: FormErrors) => {
-            const emailError = errors.email || '';
-            const phoneError = errors.phone || '';
-            this.errors = emailError || phoneError;
-            this.valid = !emailError && !phoneError;
+            this.onInputChange('phone', this._phoneField.value);
         });
     }
 
-    set contactEmail(value: string) {
+    set email(value: string) {
         this._emailField.value = value;
     }
 
-    set contactPhone(value: string) {
+    set phone(value: string) {
         this._phoneField.value = value;
     }
 }

@@ -52,3 +52,8 @@ export interface ILarekAPI {
     fetchProductList: () => Promise<IProduct[]>;
     submitOrder: (order: IOrder) => Promise<IOrderSuccess>;
 }
+
+export interface IOrderErrors {
+    address: string;
+    payment: paymentMethod;
+} 

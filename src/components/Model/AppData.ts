@@ -5,6 +5,7 @@ import {
     FormErrors,
     paymentMethod
 } from '../../types';
+import { fieldsToErrors } from '../../utils/constants';
 import { IEvents } from '../base/events';
 
 export class AppData {
@@ -22,7 +23,7 @@ export class AppData {
     formErrors: FormErrors = {};
     preview: IProduct = null;
 
-    constructor(protected events: IEvents) {}
+    constructor(protected events: IEvents) { }
 
     loadProducts(products: IProduct[]) {
         this.products = products;
@@ -60,33 +61,26 @@ export class AppData {
         this.events.emit('product:viewed', this.preview);
     }
 
-    setPaymentMethod(method: paymentMethod) {
-        this.order.payment = method;
-        this.checkFields();
+    updateField(field: keyof IOrderForm, value: string) {
+        if (field === 'payment') {
+            this.order.payment = value as paymentMethod;
+        } else {
+            this.order[field] = value;
+        }
+
+        this.checkField(field);
     }
 
-  updateField(field: keyof IOrderForm, value: string) {
-    if (field === 'payment') {
-        this.order.payment = value as 'online' | 'cash' | '';
-    } else {
-        this.order[field] = value;
-    }
-    this.checkFields();
-}
-
-    checkFields(): boolean {
+    checkField(field: keyof IOrderForm): boolean {
         const errors: FormErrors = {};
 
-        if (!this.order.email?.trim()) {
-            errors.email = 'Необходимо указать Email';
+        if (!this.order[field]?.trim()) {
+            this.formErrors[field] = fieldsToErrors[field];
+        } else {
+            this.formErrors[field] = ''
         }
 
-        if (!this.order.phone?.trim()) {
-            errors.phone = 'Необходимо указать номер телефона';
-        }
-
-        this.formErrors = errors;
-        this.events.emit('errors:updated', this.formErrors);
+        this.events.emit('errors:updated', {field: field});
 
         return Object.keys(errors).length === 0;
     }
