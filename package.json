@@ -33,6 +33,7 @@
     "webpack-dev-server": "^4.13.3"
   },
   "description": "My webpack project",
+  "homepage": "https://checkfold.github.io/web-larek-frontend",
   "scripts": {
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
