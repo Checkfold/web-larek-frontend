@@ -816,8 +816,6 @@ protected _basket: HTMLElement;  // Кнопка корзины в шапке с
 
 ```
 
- https://checkfold.github.io/web-larek-frontend/
-
 Конструктор:
 ```
 constructor(container: HTMLElement, protected events: IEvents)
@@ -843,3 +841,5 @@ set catalog(items: HTMLElement[])
 set locked(value: boolean)
 ```
 Назначение: Блокирует или разблокирует прокрутку страницы и добавляет/удаляет CSS-класс блокировки для обёртки страницы. Принимает параметром: `value: boolean` - флаг блокировки страницы (true - заблокировать, false - разблокировать)
+
+# gh-pages " https://checkfold.github.io/web-larek-frontend/"
