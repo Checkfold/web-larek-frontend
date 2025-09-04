@@ -816,6 +816,8 @@ protected _basket: HTMLElement;  // Кнопка корзины в шапке с
 
 ```
 
+ https://checkfold.github.io/web-larek-frontend/
+
 Конструктор:
 ```
 constructor(container: HTMLElement, protected events: IEvents)
